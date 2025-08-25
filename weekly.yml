@@ -1,0 +1,25 @@
+name: trello-weekly-report
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Пн 09:00 по Москве = 06:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests pytz
+      - name: Run report
+        env:
+          TRELLO_KEY:   ${{ secrets.TRELLO_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+          BOARD_ID:     ${{ secrets.BOARD_ID }}
+          TG_TOKEN:     ${{ secrets.TG_TOKEN }}
+          TG_CHAT_ID:   ${{ secrets.TG_CHAT_ID }}
+          TZ_NAME:      ${{ secrets.TZ_NAME }}
+        run: python trello_weekly_report_to_telegram.py
